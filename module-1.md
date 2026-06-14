@@ -551,7 +551,7 @@ cheap model：批量摘要
 代码路径：
 
 ```text
-/Users/elvis/Desktop/21DaysLLMLearning/part1
+/Users/elvis/Desktop/21DaysLLMLearning/demo1
 ```
 
 技术栈：
