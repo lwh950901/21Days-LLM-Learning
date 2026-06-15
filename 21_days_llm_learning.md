@@ -85,7 +85,7 @@
 | 指标 | 当前值 | 说明 |
 | --- | --- | --- |
 | 当前天数 | Day 2 / 21 | 模块 2 已完成，准备进入模块 3 |
-| 当前模块 | 模块 3：Workflow、Agent 与 LangGraph | 下一步进入 |
+| 当前模块 | 模块 3：Workflow、Agent、LangGraph 与 Multi-Agent | 下一步进入 |
 | 已完成模块 | 2 / 9 | 模块 1、模块 2 已通过完整验收 |
 | 学习中模块 | 0 / 9 | 暂无 |
 | 待验收模块 | 0 / 9 | 暂无 |
@@ -129,13 +129,18 @@
 | Workflow Demo | 模块 3 | 待提交 | 未开始 |  |
 | Agent 小功能 | 模块 3 | 待提交 | 未开始 |  |
 | LangGraph 最小 Demo | 模块 3 | 待提交 | 未开始 |  |
+| Multi-Agent 协作 Demo | 模块 3 | 待提交 | 未开始 | 双 Agent 协作（分析 + 执行） |
 | 状态保存 Demo | 模块 4 | 待提交 | 未开始 |  |
 | 可恢复流程 Demo | 模块 4 | 待提交 | 未开始 |  |
 | RAG 问答 Demo | 模块 5 | 待提交 | 未开始 |  |
+| Chunking 策略对比文档 | 模块 5 | 待提交 | 未开始 | 固定/语义/递归分块 |
+| 向量库选型说明 | 模块 5 | 待提交 | 未开始 | Pinecone / pgvector / Chroma 等 |
 | Memory Demo | 模块 6 | 待提交 | 未开始 |  |
-| Guardrails Demo | 模块 6 | 待提交 | 未开始 |  |
+| Guardrails Demo（含 Prompt Injection 防护） | 模块 6 | 待提交 | 未开始 | 输入清洗、角色锚定、分隔符 |
 | Eval 用例与观测记录 | 模块 7 | 待提交 | 未开始 |  |
+| Rate Limiting 说明 | 模块 7 | 待提交 | 未开始 | token bucket / sliding window |
 | MCP 或工具接入 Demo | 模块 7 | 待提交 | 未开始 |  |
+| CI/CD for AI 说明 | 模块 7 | 待提交 | 未开始 | Prompt 测试、A/B 测试、Canary 部署 |
 | Agent Skills 最小技能包或技能说明 | 模块 7 | 待提交 | 未开始 | 放在 MCP 后学习 |
 | ProductCraft AI 功能改造 | 模块 8 | 待提交 | 未开始 | 核心作品集 |
 | ProductCraft 部署链接 | 模块 8 | 待提交 | 未开始 | 核心作品集 |
@@ -149,11 +154,11 @@
 | --- | --- | --- | --- | --- |
 | 模块 1 | LLM 调用、AI SDK、Streaming | 已覆盖 | 已完成 | 覆盖调用链路、messages、无状态、UIMessage/ModelMessage、streamText、SSE、Abort、错误/超时/重试、Token/成本、Provider/模型切换 |
 | 模块 2 | Structured Output、Tool Calling | 已覆盖 | 已完成 | Structured Output 8 小节、Tool Calling 10 小节已完成 |
-| 模块 3 | Workflow、Agent、ReAct、LangGraph | 0 | 未开始 |  |
+| 模块 3 | Workflow、Agent、ReAct、LangGraph、Multi-Agent | 0 | 未开始 |  |
 | 模块 4 | State、Persistence、Checkpoint、HITL | 0 | 未开始 |  |
-| 模块 5 | RAG 工程、检索质量、上下文构造 | 0 | 未开始 |  |
-| 模块 6 | Memory、Guardrails、安全边界 | 0 | 未开始 |  |
-| 模块 7 | Observability、Evals、MCP、Agent Skills | 0 | 未开始 | Agent Skills 放在 MCP 后补充 |
+| 模块 5 | RAG 工程、Chunking 策略、向量库选型、检索质量、上下文构造 | 0 | 未开始 |  |
+| 模块 6 | Memory、Guardrails、安全边界、Prompt Injection | 0 | 未开始 |  |
+| 模块 7 | Observability、Evals、请求治理、MCP、CI/CD for AI、Agent Skills | 0 | 未开始 | Agent Skills 放在 MCP 后补充 |
 | 模块 8 | ProductCraft 项目深挖 | 0 | 未开始 | 作品集重点 |
 | 模块 9 | 简历追问、项目 STAR、行为面试 | 0 | 未开始 | 投递前必须完成 |
 
@@ -163,11 +168,11 @@
 | --- | --- | --- | --- |
 | 能独立接入 LLM 与 AI SDK | 模块 1 | 最小调用 Demo、Streaming Chat Demo、模块 1 总结 | 已完成 |
 | 能实现结构化输出与工具调用 | 模块 2 | Structured Output Demo、Tool Calling Demo、模块 2 总结 | 已完成 |
-| 能设计 AI 工作流和 Agent 流程 | 模块 3 | Workflow Demo、Agent 小功能、LangGraph Demo | 未开始 |
+| 能设计 AI 工作流、Agent 和 Multi-Agent 协作 | 模块 3 | Workflow Demo、Agent 小功能、LangGraph Demo、Multi-Agent 协作 Demo | 未开始 |
 | 能处理多轮状态、持久化和人工介入 | 模块 4 | 状态保存 Demo、可恢复流程 Demo、状态设计文档 | 未开始 |
-| 能实现知识库问答和 RAG 工程 | 模块 5 | 文档切分检索 Demo、RAG 问答 Demo、检索质量记录 | 未开始 |
-| 能处理记忆、安全边界和输出约束 | 模块 6 | Memory Demo、Guardrails Demo、策略文档 | 未开始 |
-| 有评估、观测和工具生态意识 | 模块 7 | Eval 用例、观测记录、MCP 或工具接入 Demo、Agent Skills 最小技能包或技能说明 | 未开始 |
+| 能实现知识库问答和 RAG 工程（含 Chunking 与向量库） | 模块 5 | 文档切分 Demo、Chunking 策略对比、向量库选型、RAG 问答 Demo、检索质量记录 | 未开始 |
+| 能处理记忆、安全边界、Prompt Injection 防护和输出约束 | 模块 6 | Memory Demo、Guardrails Demo（含注入防护）、策略文档 | 未开始 |
+| 有评估、观测、请求治理、CI/CD 和工具生态意识 | 模块 7 | Eval 用例、观测记录、Rate Limiting 说明、MCP 接入 Demo、CI/CD for AI 说明、Agent Skills 最小技能包 | 未开始 |
 | 能把 AI 能力整合进真实产品 | 模块 8 | ProductCraft AI 改造、部署链接、演示脚本 | 未开始 |
 | 能清晰表达项目并完成投递 | 模块 9 | 简历、项目 STAR、投递清单、模拟面试记录 | 未开始 |
 
@@ -263,11 +268,11 @@
 | --- | --- | --- | --- | --- |
 | 模块 1 | LLM 与 AI SDK 核心基础 | 已完成 | Day 1-2 | 已通过模块验收 |
 | 模块 2 | Structured Output 与 Tool Calling | 已完成 | Day 3-4 | 已通过模块验收 |
-| 模块 3 | Workflow、Agent 与 LangGraph | 未开始 | Day 5-7 | Day 6 阶段验收 |
+| 模块 3 | Workflow、Agent、LangGraph 与 Multi-Agent | 未开始 | Day 5-7 | Day 6 阶段验收 |
 | 模块 4 | State、Persistence、Checkpoint、Human-in-the-loop | 未开始 | Day 8-9 | Day 9 阶段验收 |
-| 模块 5 | RAG 工程 | 未开始 | Day 10-12 | Day 12 阶段验收 |
-| 模块 6 | Memory 与 Guardrails | 未开始 | Day 13-14 | Day 15 阶段验收 |
-| 模块 7 | Observability、Evals、MCP 与 Agent Skills | 未开始 | Day 15-16 | Day 15 阶段验收 |
+| 模块 5 | RAG 工程（Chunking、向量库、Hybrid Search） | 未开始 | Day 10-12 | Day 12 阶段验收 |
+| 模块 6 | Memory、Guardrails 与 Prompt Injection | 未开始 | Day 13-14 | Day 15 阶段验收 |
+| 模块 7 | Observability、Evals、MCP、CI/CD for AI 与 Agent Skills | 未开始 | Day 15-16 | Day 15 阶段验收 |
 | 模块 8 | ProductCraft 整合、部署与项目包装 | 未开始 | Day 17-19 | Day 18 阶段验收 |
 | 模块 9 | 简历、面试与投递 | 未开始 | Day 20-21 | Day 21 总验收 |
 
@@ -302,11 +307,11 @@
 | --- | --- | --- | --- | --- |
 | 模块 1 | 最小调用 Demo、Streaming Chat Demo | 模块 1 总结 | 基础调用与 Streaming 高频题 | 证明能独立搭建 LLM 应用入口 |
 | 模块 2 | Structured Output Demo、Tool Calling Demo | 模块 2 总结、学习归档、一页纸速记 | Schema、工具调用、错误处理、工具边界高频题 | 证明能做稳定的 AI 功能接口 |
-| 模块 3 | Workflow Demo、Agent 小功能、LangGraph 最小 Demo | Agent 流程图与模块 3 总结 | Agent、ReAct、Workflow 高频题 | 证明能设计多步骤 AI 工作流 |
+| 模块 3 | Workflow Demo、Agent 小功能、LangGraph 最小 Demo、Multi-Agent 协作 Demo | Agent 流程图、Multi-Agent 模式说明、Prompt 策略要点与模块 3 总结 | Agent、ReAct、Workflow、Multi-Agent、Prompt 设计高频题 | 证明能设计多步骤 AI 工作流和 Multi-Agent 协作 |
 | 模块 4 | 状态保存 Demo、可恢复流程 Demo | 状态设计文档、模块 4 总结 | State、Checkpoint、HITL 高频题 | 证明能处理真实业务流程连续性 |
 | 模块 5 | 文档切分检索 Demo、RAG 问答 Demo | 检索质量记录、模块 5 总结 | RAG 工程高频题 | 证明能实现知识库问答类项目 |
-| 模块 6 | Memory Demo、Guardrails Demo | 记忆策略文档、模块 6 总结 | Memory、Guardrails 高频题 | 证明能处理个性化与安全边界 |
-| 模块 7 | Eval 用例、观测记录、MCP 或工具接入 Demo、Agent Skills 最小技能包或技能说明 | 模块 7 总结 | Evals、Observability、MCP、Agent Skills 高频题 | 证明有工程质量、可维护意识和可复用 Agent 能力组织能力 |
+| 模块 6 | Memory Demo、Guardrails Demo（含 Prompt Injection 防护） | 记忆策略文档、安全策略文档、模块 6 总结 | Memory、Guardrails、Prompt Injection 高频题 | 证明能处理个性化、安全边界和注入防护 |
+| 模块 7 | Eval 用例、观测记录、Rate Limiting 说明、MCP 接入 Demo、CI/CD for AI 说明、Agent Skills 最小技能包 | 模块 7 总结 | Evals、Observability、MCP、CI/CD for AI、Agent Skills 高频题 | 证明有工程质量、请求治理、CI/CD 和可复用 Agent 能力组织能力 |
 | 模块 8 | ProductCraft AI 功能改造、部署版本 | README、案例页、演示脚本、技术亮点文档 | 项目深挖问答 | 形成核心作品集项目 |
 | 模块 9 | 简历版本、投递清单 | 项目 STAR 表达、21 天总结 | 模拟面试记录、题库复盘 | 直接服务投递和面试转化 |
 
@@ -318,18 +323,18 @@
 | Day 2 | 模块 1 | 完成基础聊天、Streaming、错误处理与章节总结 | 可运行 Chat Demo、模块 1 总结、面试题 |
 | Day 3 | 模块 2 | Structured Output 入门与模块 1 验收 | Schema 输出 Demo、模块 1 验收记录 |
 | Day 4 | 模块 2 | Tool Calling 工程化练习 | Tool Calling Demo、模块 2 总结、面试题 |
-| Day 5 | 模块 3 | Workflow 与 Agent 基础 | Workflow Demo、Agent 流程图文档 |
+| Day 5 | 模块 3 | Workflow、Agent 基础与 Prompt 策略 | Workflow Demo、Agent 流程图文档；补充 Prompt 设计要点（角色/边界/输出格式/不编造） |
 | Day 6 | 模块 3 | ReAct 与 LangGraph 基础，阶段验收 | LangGraph 最小 Demo、Day 6 验收记录 |
-| Day 7 | 模块 3 | Agent 项目化练习 | 可运行 Agent 小功能、模块 3 总结、面试题 |
+| Day 7 | 模块 3 | Multi-Agent 协作与项目化练习 | 可运行 Multi-Agent 协作 Demo（如：分析 + 执行双 Agent）、模块 3 总结、面试题 |
 | Day 8 | 模块 4 | State 与 Persistence | 状态保存 Demo、状态设计文档 |
 | Day 9 | 模块 4 | Checkpoint 与 Human-in-the-loop，阶段验收 | 可恢复流程 Demo、模块 4 总结、面试题 |
-| Day 10 | 模块 5 | RAG 工程基础 | 文档切分与检索 Demo |
-| Day 11 | 模块 5 | RAG 质量优化 | RAG 问答 Demo、检索质量记录 |
+| Day 10 | 模块 5 | RAG 工程基础：文档切分策略 + 向量库 | 文档切分 Demo（固定/语义/递归分块对比）、向量库选型说明 |
+| Day 11 | 模块 5 | RAG 检索质量与 Hybrid Search | RAG 问答 Demo、检索质量记录、Hybrid Search（向量+关键词） |
 | Day 12 | 模块 5 | RAG 项目化与阶段验收 | 模块 5 总结、面试题、Day 12 验收记录 |
 | Day 13 | 模块 6 | Memory 基础与应用场景 | Memory Demo、记忆策略文档 |
-| Day 14 | 模块 6 | Guardrails 与安全边界 | Guardrails Demo、模块 6 总结、面试题 |
-| Day 15 | 模块 7 | Observability 与 Evals，阶段验收 | 观测记录、Eval 用例、Day 15 验收记录 |
-| Day 16 | 模块 7 | MCP 基础与工具接入，随后补 Agent Skills | MCP 或工具接入 Demo、Agent Skills 最小技能包或技能说明、模块 7 总结、面试题 |
+| Day 14 | 模块 6 | Guardrails、安全边界与 Prompt Injection 防护 | Guardrails Demo（含输入清洗/角色锚定/分隔符）、Prompt Injection 防护策略说明、模块 6 总结、面试题 |
+| Day 15 | 模块 7 | Observability、Evals 与请求治理，阶段验收 | 观测记录、Eval 用例、Rate Limiting 说明、Day 15 验收记录 |
+| Day 16 | 模块 7 | MCP 基础、CI/CD for AI、Agent Skills | MCP 接入 Demo、CI/CD for AI（Prompt 测试/A-B 测试/Canary 部署）说明、Agent Skills 最小技能包、模块 7 总结、面试题 |
 | Day 17 | 模块 8 | ProductCraft AI 能力整合 | ProductCraft AI 功能改造代码 |
 | Day 18 | 模块 8 | 部署、演示链路、阶段验收 | 可访问部署、演示脚本、Day 18 验收记录 |
 | Day 19 | 模块 8 | 项目包装与作品集材料 | 项目 README、案例页、技术亮点文档 |
@@ -367,7 +372,7 @@
 | 天数 | 今日完成 | 未完成 | 代码产出 | 理解薄弱点 | 明日第一项任务 |
 | --- | --- | --- | --- | --- | --- |
 | Day 1 | 完成模块 1 核心概念学习、AI SDK Demo、DeepSeek API/模型接入、Streaming、停止生成、错误提示、状态展示、模型配置抽离 | 无结构性未完成；后续在项目中继续熟练 AI SDK 具体 API | `/Users/elvis/Desktop/21DaysLLMLearning/part1` | 需继续围绕真实 Demo 练习面试表达 2-3 遍 | 进入模块 2：Structured Output 与 Tool Calling |
-| Day 2 | 完成 Structured Output Demo、Tool Calling Demo、ProductBrief Zod Schema、工具调用日志、工具错误展示、模块 2 学习归档 | 无结构性未完成；后续在模块 3 中把 Structured Output 和 Tool Calling 放进可控 Workflow | demo2：`/Users/elvis/Desktop/21DaysLLMLearning/demo2`；demo3：`/Users/elvis/Desktop/21DaysLLMLearning/demo3` | 需继续在 Workflow 中练习工具调用边界、参数校验、副作用控制和日志表达 | 进入模块 3：Workflow、Agent 与 LangGraph |
+| Day 2 | 完成 Structured Output Demo、Tool Calling Demo、ProductBrief Zod Schema、工具调用日志、工具错误展示、模块 2 学习归档 | 无结构性未完成；后续在模块 3 中把 Structured Output 和 Tool Calling 放进可控 Workflow | demo2：`/Users/elvis/Desktop/21DaysLLMLearning/demo2`；demo3：`/Users/elvis/Desktop/21DaysLLMLearning/demo3` | 需继续在 Workflow 中练习工具调用边界、参数校验、副作用控制和日志表达 | 进入模块 3：Workflow、Agent、LangGraph 与 Multi-Agent |
 | Day 3 | 待记录 | 待记录 | 待记录 | 待记录 | 待记录 |
 | Day 4 | 待记录 | 待记录 | 待记录 | 待记录 | 待记录 |
 | Day 5 | 待记录 | 待记录 | 待记录 | 待记录 | 待记录 |
@@ -391,7 +396,7 @@
 ## 当前日台账
 
 - 当前第几天：Day 2
-- 当前模块：模块 3：Workflow、Agent 与 LangGraph
+- 当前模块：模块 3：Workflow、Agent、LangGraph 与 Multi-Agent
 - 当前模块状态：未开始，下一步进入
 - 今日目标：模块 2 已完成；下一步开始 Workflow、Agent 与 LangGraph
 - 今日必须产出的代码或文档：
@@ -517,7 +522,7 @@
 
 | 优先级 | 行动 | 所属模块 | 需要的证据 | 状态 |
 | --- | --- | --- | --- | --- |
-| P0 | 开始模块 3：Workflow、Agent 与 LangGraph | 模块 3 | 诊断结果、Workflow/Agent 选择说明、State 最小设计 | 待开始 |
+| P0 | 开始模块 3：Workflow、Agent、LangGraph 与 Multi-Agent | 模块 3 | 诊断结果、Workflow/Agent 选择说明、State 最小设计 | 待开始 |
 | P0 | 完成模块 3 LangGraph State 最小 Demo | 模块 3 | 代码路径、运行证明、State/Node/Edge 说明 | 待提交 |
 | P1 | 将模块 2 Structured Output 和 Tool Calling 放进可控 Workflow | 模块 3 | Workflow 设计草图或说明 | 待提交 |
 | P1 | 继续明确企业级 AI 应用主项目方向 | 模块 3/后续项目 | ProductCraft、AI PDF 助手或其他企业级 AI 应用方向 | 待确认 |
@@ -713,3 +718,4 @@
 | 2026-06-14 | 根据学习回传更新模块 1 为已完成，记录 Demo、测试、复盘、面试表达，下一步进入模块 2 |
 | 2026-06-15 | 在模块 7 的 MCP 后补充 Agent Skills 学习与最小技能包产出 |
 | 2026-06-15 | 根据学习回传更新模块 2 为已完成，记录 Structured Output、Tool Calling、测试、归档、练习与面试表达，下一步进入模块 3 |
+| 2026-06-15 | 模块 3 补充 Multi-Agent 协作模式、Prompt 策略要点；模块 5 补充 Chunking 策略与向量库选型；模块 6 补充 Prompt Injection 防护；模块 7 补充 Rate Limiting 与 CI/CD for AI |
