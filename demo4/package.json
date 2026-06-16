@@ -1,0 +1,30 @@
+{
+  "name": "meeting-workflow-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "cli": "node --env-file-if-exists=.env.local src/index.ts",
+    "dev:no-env": "node src/index.ts",
+    "build": "next build",
+    "langgraph": "node src/langgraph-minimal.ts",
+    "test:multi-agent": "node --test tests/multi-agent.test.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "latest",
+    "@langchain/core": "latest",
+    "@langchain/langgraph": "latest",
+    "ai": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

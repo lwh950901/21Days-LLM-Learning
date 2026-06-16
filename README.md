@@ -10,7 +10,7 @@
 | --- | --- | --- | --- |
 | 1 | **LLM 与 AI SDK 核心基础** | Day 1-2 | ✅ 已完成 |
 | 2 | Structured Output 与 Tool Calling | Day 3-4 | ✅ 已完成 |
-| 3 | Workflow、Agent 与 LangGraph | Day 5-7 | ⬜ 未开始 |
+| 3 | Workflow、Agent、LangGraph 与 Multi-Agent | Day 5-7 | ✅ 已完成 |
 | 4 | State、Persistence、Checkpoint、HITL | Day 8-9 | ⬜ 未开始 |
 | 5 | RAG 工程 | Day 10-12 | ⬜ 未开始 |
 | 6 | Memory 与 Guardrails | Day 13-14 | ⬜ 未开始 |
@@ -105,3 +105,63 @@
 2. **Tool Calling**：模型是决策者不是执行者。后端提供白名单、校验参数、执行副作用、记录日志，模型只在白名单中选择
 3. **Provider 兼容**：不同 provider 对 structured output / tool calling 的支持不同，需要降级策略。DeepSeek 不支持 `json_schema`，切为 `json_object` + prompt 配合
 4. **工具风险分级**：readonly 工具可自动调用，business 工具需确认或限制频率，日志记录所有调用链
+
+---
+
+## 模块 3 完成概要 ✅
+
+> 📄 [完整学习归档](module-3.md) · [一页纸速记版](module-3-fast.md) · 💻 [Demo 代码](demo4/)
+
+### 学习内容
+
+**Workflow**
+- 手写 Workflow 引擎：State / Node / Edge / Conditional Edge / Loop
+- State 是全局共享工作台，Node 只返回 `Partial<State>`
+- Conditional Edge 根据 `qualityScore` 和 `retryCount` 三路路由
+- Loop = Conditional Edge 回到已访问节点 + `maxRetries` 防止无限循环
+- 通用 Workflow 模板可迁移到 PRD 生成、合同审查、客服工单等场景
+
+**Agent (ReAct)**
+- Model Decision → Act → Observation → Final Answer
+- 模型只选择工具，代码执行工具（模型不直接操作数据）
+- 接入 AI SDK / DeepSeek 做工具选择，无 API key 时自动降级为规则
+- Tool Calling 是 Agent 的基础组件，但 Tool Calling ≠ Agent
+
+**LangGraph**
+- `StateGraph` / `addNode` / `addEdge` / `addConditionalEdges` / `compile()`
+- 手写 Workflow 与 LangGraph 的 1:1 对应关系
+- 最小 Demo 不接 LLM，只验证图结构、条件边和循环
+
+**Multi-Agent**
+- 最小双 Agent：analysisAgent（LLM 分析意图）+ executorAgent（代码执行工具）
+- `analyzeWithLLM` 调用 LLM 返回多工具列表 + reason
+- 无 API key 或 LLM 失败时自动降级为 `analysisAgentByRule`
+- executorAgent 始终由代码执行白名单工具，不直接调用 LLM
+
+**Prompt 策略**
+- 每个 Node 的 Prompt 只做一件事，不写万能大 Prompt
+- 只传当前节点需要的 State 字段，减少 token 和噪声
+- 修正节点输入当前版本 + 质量问题，不做从零重写
+
+### 代码产出
+
+[demo4/](demo4/) — 会议纪要 Workflow 控制台
+
+| 能力 | 技术实现 |
+| --- | --- |
+| Workflow 引擎 | 手写 7 个 Node + Conditional Edge + Loop（`maxRetries`） |
+| Agent (ReAct) | AI SDK / DeepSeek 工具选择 + 规则降级 |
+| LangGraph | `StateGraph` 最小图，State / Node / Edge / Conditional Edge 完整对应 |
+| Multi-Agent (LLM) | `analyzeWithLLM` → analysisAgent → executorAgent，失败降级规则 |
+| 可视化页面 | Next.js App Router + SSE 流式 Trace + PhaseProgress |
+| 学习面板 | 每步对应 📖 核心概念 + 💬 面试表达，按阶段独立累积 |
+| State 可视化 | `stateDiff` tag 展示每步修改了哪些 State 字段 |
+| SSE 流式推送 | `ReadableStream` + `text/event-stream`，后端每步实时推事件 |
+| 可配置延迟 | `DemoRunOptions.delayMs` 控制学习 Demo 速度 |
+
+### 面试表达
+
+1. **Workflow vs Agent 选择**：步骤稳定用 Workflow（代码控制），路径不确定用 Agent（模型决策），外层 Workflow + 局部 Agent 是最常见模式
+2. **Conditional Edge + Loop**：质量检查不通过时通过条件边进入修正，`maxRetries` 防止无限循环，控制成本和失败边界
+3. **ReAct 边界**：模型选择工具 ≠ 模型执行工具。Act 是代码执行，Observation 是工具结果，Final Answer 基于 Observation
+4. **Multi-Agent 设计**：只在职责天然不同时拆分。analysisAgent 负责语义理解（接 LLM），executorAgent 执行白名单工具（纯代码），LLM 不可用时规则兜底
