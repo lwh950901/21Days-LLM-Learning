@@ -1,5 +1,11 @@
-import type { QualityLog, RetrievedChunk, SearchMode } from "./types.ts";
+import type {
+  CandidateLog,
+  QualityLog,
+  RetrievedChunk,
+  SearchMode,
+} from "./types.ts";
 import type { VectorStore } from "./vector-store.ts";
+import { rerankRetrievedChunks, type RerankProvider } from "./reranker.ts";
 
 export async function retrieveRelevantChunks(
   store: VectorStore,
@@ -33,37 +39,51 @@ function createQualityLog(
   query: string,
   topK: number,
   minScore: number,
-  results: RetrievedChunk[],
-  allRetrieved: RetrievedChunk[],
+  retrievedCandidates: RetrievedChunk[],
+  filteredCandidates: RetrievedChunk[],
+  rerankedCandidates: RetrievedChunk[],
+  selectedChunks: RetrievedChunk[],
 ): QualityLog {
-  const hasAnswer = results.length > 0;
+  const hasAnswer = selectedChunks.length > 0;
 
-  // results: 高于 minScore 的 chunk
-  // allRetrieved: 所有检索到的 chunk（含低于 minScore 被过滤的）
+  // 分阶段保存候选，方便定位 chunk 是在召回、过滤还是重排阶段丢失。
   let reason: QualityLog["reason"];
   if (hasAnswer) {
     reason = "answered";
-  } else if (allRetrieved.length > 0) {
+  } else if (retrievedCandidates.length > 0) {
     reason = "low_relevance";
   } else {
     reason = "no_chunks";
   }
 
-  return {
-    query,
-    topK,
-    minScore,
-    retrievedCount: results.length,
-    hasAnswer,
-    reason,
-    matchedChunks: results.map((result) => ({
+  const toCandidateLogs = (results: RetrievedChunk[]): CandidateLog[] =>
+    results.map((result) => ({
       id: result.chunk.id,
       source: result.chunk.metadata.source,
       headingPath: result.chunk.metadata.headingPath,
       score: Number(result.score.toFixed(4)),
       vectorScore: Number(result.vectorScore.toFixed(4)),
       keywordScore: Number(result.keywordScore.toFixed(4)),
-    })),
+      rerankScore:
+        result.rerankScore === undefined
+          ? undefined
+          : Number(result.rerankScore.toFixed(4)),
+    }));
+
+  const selectedLogs = toCandidateLogs(selectedChunks);
+
+  return {
+    query,
+    topK,
+    minScore,
+    retrievedCount: selectedChunks.length,
+    hasAnswer,
+    reason,
+    retrievedCandidates: toCandidateLogs(retrievedCandidates),
+    filteredCandidates: toCandidateLogs(filteredCandidates),
+    rerankedCandidates: toCandidateLogs(rerankedCandidates),
+    selectedChunks: selectedLogs,
+    matchedChunks: selectedLogs,
   };
 }
 
@@ -76,23 +96,53 @@ export async function answerWithRetrievedContext(
     searchMode?: SearchMode;
   },
   generateAnswer?: (context: string, query: string) => Promise<string>,
+  rerank?: {
+    provider: RerankProvider;
+    topN: number;
+  },
 ) {
-  // 先获取全部 topK 结果（不设 minScore），用于质量日志分析
+  // RAG 检索 Pipeline：
+  //   Stage 1 — 召回：取全部 topK 候选（minScore=-1，不截断），用于 QualityLog 分析
+  //   Stage 2 — 粗筛：按 minScore 过滤，移除明显不相关的 chunk
+  //   Stage 3 — 重排（可选）：BGE Reranker 联合 query + chunk 文本重新打分，保留 topN
+  //   Stage 4 — 组装：buildContext 拼接最终进入 prompt 的上下文
+  //
+  // 为什么 rerank 在 minScore 过滤之后？
+  //   低于 minScore 的 chunk 语义距离太远，即使 reranker 也救不回来，
+  //   提前过滤可以减少 rerank API 的 token 消耗和延迟。
+  //
+  // 为什么先粗筛再重排而不是反过来？
+  //   召回阶段追求高召回（宁可多捞），重排阶段追求高精度（精准截断）。
+  //   topK 设置大一些（如 10-20），rerank 后再保留 topN（如 3-5），
+  //   这是生产环境 RAG 的最常见模式。
+
   const allRetrieved = await retrieveRelevantChunks(store, {
     ...options,
     minScore: -1,
   });
 
-  // 再按 minScore 过滤得到有效结果
-  const results = allRetrieved.filter((r) => r.score >= options.minScore);
+  const filteredResults = allRetrieved.filter((r) => r.score >= options.minScore);
+  const rerankedResults = rerank
+    ? await rerankRetrievedChunks(
+        options.query,
+        filteredResults,
+        rerank.provider,
+        filteredResults.length,
+      )
+    : [];
+  const results = rerank
+    ? rerankedResults.slice(0, rerank.topN)
+    : filteredResults;
   const hasAnswer = results.length > 0;
   const context = buildContext(results);
   const qualityLog = createQualityLog(
     options.query,
     options.topK,
     options.minScore,
-    results,
     allRetrieved,
+    filteredResults,
+    rerankedResults,
+    results,
   );
 
   if (!hasAnswer) {

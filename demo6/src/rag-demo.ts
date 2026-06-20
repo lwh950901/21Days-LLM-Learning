@@ -2,6 +2,7 @@ import { chunkMarkdown } from "./chunking.ts";
 import { createSiliconFlowEmbedder } from "./embeddings.ts";
 import { createLocalKeywordEmbedder } from "./local-embedding.ts";
 import { answerWithRetrievedContext } from "./rag.ts";
+import { createSiliconFlowReranker } from "./reranker.ts";
 import { createInMemoryVectorStore } from "./vector-store.ts";
 
 import type { ChunkingStrategy, SearchMode } from "./types.ts";
@@ -17,6 +18,8 @@ export type RagDemoInput = {
   useLlmAnswer: boolean;
   chunkingStrategy: ChunkingStrategy;
   searchMode: SearchMode;
+  useReranker: boolean;
+  rerankTopN: number;
 };
 
 export async function runRagDemo(input: RagDemoInput) {
@@ -48,6 +51,12 @@ export async function runRagDemo(input: RagDemoInput) {
       searchMode: input.searchMode,
     },
     generateAnswer,
+    input.useReranker
+      ? {
+          provider: createSiliconFlowReranker(),
+          topN: input.rerankTopN,
+        }
+      : undefined,
   );
 
   return {
@@ -56,5 +65,6 @@ export async function runRagDemo(input: RagDemoInput) {
     embeddingMode: input.useRealEmbeddings ? "siliconflow-bge-m3" : "local-keyword",
     answerMode: input.useLlmAnswer ? "deepseek-llm" : "template",
     searchMode: input.searchMode,
+    rerankMode: input.useReranker ? "siliconflow-bge-reranker-v2-m3" : "off",
   };
 }

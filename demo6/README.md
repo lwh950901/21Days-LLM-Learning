@@ -38,6 +38,7 @@ npm run build
 - `Embedding`: local embeddings are used by default; SiliconFlow BGE-M3 can be enabled from the UI.
 - `Vector search`: chunks and query are embedded, then ranked by cosine similarity.
 - `Hybrid search`: vector score and keyword score can be combined for queries with exact identifiers.
+- `Rerank`: optional SiliconFlow `BAAI/bge-reranker-v2-m3` reorders topK candidates and keeps topN.
 - `topK`: controls how many candidate chunks are returned.
 - `minScore`: prevents low-relevance chunks from entering the context.
 - `No-answer handling`: if no chunk crosses the threshold, the system refuses instead of inventing an answer.
@@ -50,6 +51,7 @@ npm run build
 - `src/local-embedding.ts`: free local embedding fallback for learning.
 - `src/vector-store.ts`: in-memory vector, keyword, and hybrid scoring.
 - `src/rag.ts`: retrieval, context construction, refusal, and quality log.
+- `src/reranker.ts`: SiliconFlow rerank API client and result-to-chunk mapping.
 - `src/rag-demo.ts`: demo orchestration.
 - `app/api/rag/route.ts`: Next API route for running the chain.
 - `app/page.tsx`: visual RAG workbench.

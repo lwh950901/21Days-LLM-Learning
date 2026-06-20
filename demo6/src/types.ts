@@ -17,6 +17,17 @@ export type RetrievedChunk = {
   score: number;
   vectorScore: number;
   keywordScore: number;
+  rerankScore?: number;
+};
+
+export type CandidateLog = {
+  id: string;
+  source: string;
+  headingPath?: string;
+  score: number;
+  vectorScore: number;
+  keywordScore: number;
+  rerankScore?: number;
 };
 
 export type QualityLog = {
@@ -26,12 +37,9 @@ export type QualityLog = {
   retrievedCount: number;
   hasAnswer: boolean;
   reason: "answered" | "no_chunks" | "low_relevance";
-  matchedChunks: Array<{
-    id: string;
-    source: string;
-    headingPath?: string;
-    score: number;
-    vectorScore: number;
-    keywordScore: number;
-  }>;
+  retrievedCandidates: CandidateLog[];
+  filteredCandidates: CandidateLog[];
+  rerankedCandidates: CandidateLog[];
+  selectedChunks: CandidateLog[];
+  matchedChunks: CandidateLog[];
 };

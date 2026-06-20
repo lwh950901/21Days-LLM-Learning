@@ -22,6 +22,8 @@ export async function POST(request: Request) {
       searchMode: (["vector", "keyword", "hybrid"].includes(body.searchMode)
         ? body.searchMode
         : "vector") as "vector" | "keyword" | "hybrid",
+      useReranker: Boolean(body.useReranker),
+      rerankTopN: Math.max(1, Number(body.rerankTopN || 3)),
     });
 
     return NextResponse.json(result);

@@ -21,6 +21,7 @@ type RagResult = {
   embeddingMode: string;
   answerMode?: string;
   searchMode?: SearchMode;
+  rerankMode?: string;
 };
 
 // ── Learning notes ──
@@ -55,6 +56,12 @@ const LEARNING_NOTES: Record<string, { concept: string; interview: string }> = {
       "开启 DeepSeek LLM 回答后，检索到的 chunk 作为上下文喂给 LLM，LLM 基于上下文生成最终答案。不开启时仅返回模板拼接。",
     interview:
       "RAG 的最后一步是让 LLM 基于检索结果生成答案。关键是限制 LLM 只根据上下文回答，不编造。prompt 里要明确'找不到就说找不到'。",
+  },
+  rerank: {
+    concept:
+      "先用向量或 Hybrid Search 召回 topK 候选，再由 BGE Reranker 同时读取 query 和每个 chunk，按答案相关性重新排序并保留 topN。",
+    interview:
+      "召回阶段追求不漏，Rerank 阶段追求精准。我用 BAAI/bge-reranker-v2-m3 将 query 和候选 chunk 联合打分，再压缩进入 prompt 的上下文。",
   },
 };
 
@@ -108,6 +115,9 @@ function RetrievalList({ results }: { results: RetrievedChunk[] }) {
               final {result.score.toFixed(4)} · vector{" "}
               {result.vectorScore.toFixed(4)} · keyword{" "}
               {result.keywordScore.toFixed(4)}
+              {result.rerankScore === undefined
+                ? ""
+                : ` · rerank ${result.rerankScore.toFixed(4)}`}
             </p>
             <p>{result.chunk.text}</p>
           </div>
@@ -125,7 +135,7 @@ function LearningPanel({ step }: { step: string }) {
     <section className="panel learning-panel">
       <h2>Learning context</h2>
       <div>
-        <h4>📖 {step === "qualityLog" ? "Quality Log" : step === "llmAnswer" ? "LLM 回答" : step === "embedding" ? "Embedding" : step === "retrieval" ? "检索" : "Chunking"}</h4>
+        <h4>📖 {step === "qualityLog" ? "Quality Log" : step === "rerank" ? "Rerank 重排" : step === "llmAnswer" ? "LLM 回答" : step === "embedding" ? "Embedding" : step === "retrieval" ? "检索" : "Chunking"}</h4>
         <p>{note.concept}</p>
       </div>
       <div>
@@ -149,6 +159,8 @@ export default function Page() {
   const [useLlmAnswer, setUseLlmAnswer] = useState(false);
   const [chunkingStrategy, setChunkingStrategy] = useState<ChunkingStrategy>("recursive");
   const [searchMode, setSearchMode] = useState<SearchMode>("vector");
+  const [useReranker, setUseReranker] = useState(false);
+  const [rerankTopN, setRerankTopN] = useState(3);
   const [result, setResult] = useState<RagResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState("");
@@ -173,6 +185,8 @@ export default function Page() {
         useLlmAnswer,
         chunkingStrategy,
         searchMode,
+        useReranker,
+        rerankTopN,
       }),
     });
 
@@ -188,7 +202,15 @@ export default function Page() {
     setActiveStep("");
   }
 
-  const resultSteps = result ? ["chunking", "embedding", "retrieval", result.answerMode === "deepseek-llm" ? "llmAnswer" : "qualityLog"] : [];
+  const resultSteps = result
+    ? [
+        "chunking",
+        "embedding",
+        "retrieval",
+        ...(result.rerankMode !== "off" ? ["rerank"] : []),
+        result.answerMode === "deepseek-llm" ? "llmAnswer" : "qualityLog",
+      ]
+    : [];
 
   return (
     <main className="shell">
@@ -208,6 +230,8 @@ export default function Page() {
           <strong>{result?.answerMode ?? "pending"}</strong>
           <span style={{ marginTop: 4 }}>检索模式</span>
           <strong>{result?.searchMode ?? searchMode}</strong>
+          <span style={{ marginTop: 4 }}>Rerank</span>
+          <strong>{result?.rerankMode ?? "off"}</strong>
         </div>
       </section>
 
@@ -337,6 +361,28 @@ export default function Page() {
             />
             使用 DeepSeek LLM 生成答案（需配置 OPENAI_API_KEY）
           </label>
+
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={useReranker}
+              onChange={(e) => setUseReranker(e.target.checked)}
+            />
+            使用 SiliconFlow BGE Reranker（需配置 SILICONFLOW_API_KEY）
+          </label>
+
+          {useReranker && (
+            <label>
+              Rerank topN
+              <input
+                type="number"
+                min={1}
+                max={topK}
+                value={rerankTopN}
+                onChange={(e) => setRerankTopN(Number(e.target.value))}
+              />
+            </label>
+          )}
 
           <button onClick={runDemo} disabled={isRunning}>
             {isRunning ? "执行中..." : "运行 RAG 检索"}

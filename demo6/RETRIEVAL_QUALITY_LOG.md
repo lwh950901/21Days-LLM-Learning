@@ -10,16 +10,21 @@ type QualityLog = {
   retrievedCount: number;
   hasAnswer: boolean;
   reason: "answered" | "no_chunks" | "low_relevance";
-  matchedChunks: Array<{
-    id: string;
-    source: string;
-    headingPath?: string;
-    score: number;
-    vectorScore: number;
-    keywordScore: number;
-  }>;
+  retrievedCandidates: CandidateLog[];
+  filteredCandidates: CandidateLog[];
+  rerankedCandidates: CandidateLog[];
+  selectedChunks: CandidateLog[];
 };
 ```
+
+## Pipeline Stages
+
+- `retrievedCandidates`: all initial topK candidates.
+- `filteredCandidates`: candidates remaining after minScore filtering.
+- `rerankedCandidates`: all filtered candidates ordered by rerankScore.
+- `selectedChunks`: final topN chunks used to build context.
+
+This makes it possible to identify exactly where the correct chunk disappeared.
 
 ## Why This Matters
 

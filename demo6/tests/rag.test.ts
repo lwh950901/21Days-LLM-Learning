@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { chunkMarkdown } from "../src/chunking.ts";
 import { createInMemoryVectorStore } from "../src/vector-store.ts";
 import { answerWithRetrievedContext, retrieveRelevantChunks } from "../src/rag.ts";
+import { rerankRetrievedChunks } from "../src/reranker.ts";
 
 const sampleMarkdown = `
 # 权限管理
@@ -160,4 +161,84 @@ E1024：用户 token 已过期，请重新登录。
   assert.notEqual(vectorResults[0].chunk.metadata.headingPath, "错误码");
   assert.equal(hybridResults[0].chunk.metadata.headingPath, "错误码");
   assert.ok(hybridResults[0].keywordScore > 0);
+});
+
+test("reranker reorders retrieved chunks by answer relevance", async () => {
+  const chunks = chunkMarkdown(
+    `
+# 导出权限
+
+管理员可以进入数据导出页面，并管理导出任务权限。
+
+# 导出上限
+
+管理员每次最多导出 10000 条数据。
+`,
+    {
+      source: "export.md",
+      maxLength: 120,
+      strategy: "recursive",
+    },
+  );
+
+  const retrieved = chunks.map((chunk, index) => ({
+    chunk,
+    score: index === 0 ? 0.9 : 0.8,
+    vectorScore: index === 0 ? 0.9 : 0.8,
+    keywordScore: 0,
+  }));
+
+  const reranked = await rerankRetrievedChunks(
+    "管理员最多能导出多少条数据？",
+    retrieved,
+    async () => [
+      { index: 1, relevanceScore: 0.98 },
+      { index: 0, relevanceScore: 0.42 },
+    ],
+  );
+
+  assert.equal(reranked[0].chunk.metadata.headingPath, "导出上限");
+  assert.equal(reranked[0].rerankScore, 0.98);
+  assert.equal(reranked[1].rerankScore, 0.42);
+});
+
+test("quality log records retrieval, filtering, reranking, and selection stages", async () => {
+  const chunks = chunkMarkdown(sampleMarkdown, {
+    strategy: "recursive",
+    source: "system-handbook.md",
+    maxLength: 120,
+  });
+
+  const store = createInMemoryVectorStore({
+    embed: async (texts) =>
+      texts.map((text) => [
+        text.includes("管理员") ? 1 : 0,
+        text.includes("普通用户") ? 1 : 0,
+      ]),
+  });
+  await store.index(chunks);
+
+  const result = await answerWithRetrievedContext(
+    store,
+    {
+      query: "管理员最多能导出多少条数据？",
+      topK: 2,
+      minScore: 0,
+      searchMode: "vector",
+    },
+    undefined,
+    {
+      provider: async () => [
+        { index: 0, relevanceScore: 0.97 },
+        { index: 1, relevanceScore: 0.21 },
+      ],
+      topN: 1,
+    },
+  );
+
+  assert.equal(result.qualityLog.retrievedCandidates.length, 2);
+  assert.equal(result.qualityLog.filteredCandidates.length, 2);
+  assert.equal(result.qualityLog.rerankedCandidates.length, 2);
+  assert.equal(result.qualityLog.selectedChunks.length, 1);
+  assert.equal(result.qualityLog.selectedChunks[0].rerankScore, 0.97);
 });
